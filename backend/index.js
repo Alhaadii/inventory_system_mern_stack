@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const createDatabase = require("./config/Database");
 const inventoryRout = require("./routes/InventoryRouter");
+const userRouter = require("./routes/usersRout");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/inventory", inventoryRout);
+app.use("/users", userRouter);
 
 app.listen(port, () => {
   createDatabase();

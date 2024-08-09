@@ -5,7 +5,7 @@ const createDatabase = () => {
   mongoose
     .connect(process.env.URL)
     .then(() => {
-      console.log("Database created and connected successfully");
+      console.log("Database connected successfully");
     })
     .catch((error) => {
       console.log("Database failed to connect.");

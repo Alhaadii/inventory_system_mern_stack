@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
 const InventoryModal = require("../models/InventoryModal");
-const express = require("express");
 
 // Geting All inventory
 const getInventoryItmes = async (req, res) => {
-  const inventoryData = await InventoryModal.find();
+  const inventoryData = await InventoryModal.find().sort({ createdAt: -1 });
   if (!inventoryData) {
     return res.status(404).send({ message: "Inventory not found" });
   }
@@ -15,6 +14,15 @@ const getInventoryItmes = async (req, res) => {
 const registerInventoryItmes = async (req, res) => {
   try {
     const { itemName, qyt, price } = req.body;
+    const empty = [];
+
+    if (!itemName) return empty.push("itemName");
+    if (!qyt) return empty.push("qyt");
+    if (!price) return empty.push("price");
+    if (empty.length > 0) {
+      throw new Error("All fields are required", empty);
+    }
+
     const totalPrice = JSON.stringify(qyt * price);
     console.log(totalPrice);
     const newInventory = await InventoryModal({
@@ -67,7 +75,7 @@ const getSingleinventory = async (req, res) => {
     }
     const inventoryData = await InventoryModal.findById(id);
     if (!inventoryData) {
-      throw new error(res.status(404).send({ message: "Inventory not found" }));
+      throw new Error(res.status(404).send({ message: "Inventory not found" }));
     }
     res.json(inventoryData);
   } catch (error) {
@@ -77,19 +85,17 @@ const getSingleinventory = async (req, res) => {
 
 // Delete inventory
 
-const deleteInventory = async (req, res) => {
+const removeInventory = async (req, res) => {
+  const { id } = req.params;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send({ message: "Invalid id" });
+  }
   try {
-    const { id } = req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).send({ message: "Invalid id" });
-    }
     const inventoryData = await InventoryModal.findByIdAndDelete(id);
-    if (!inventoryData) {
-      throw new error(res.status(404).send({ message: "Inventory not found" }));
-    }
-    res.json(inventoryData);
+
+    res.send({ message: "Inventory deleted successfully" });
   } catch (error) {
-    res.send({ message: "Error deleting inventory: " + error.message });
+    res.send({ mess });
   }
 };
 
@@ -98,5 +104,5 @@ module.exports = {
   registerInventoryItmes,
   getSingleinventory,
   updateInventory,
-  deleteInventory,
+  removeInventory,
 };
